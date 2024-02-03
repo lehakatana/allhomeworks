@@ -1,0 +1,5 @@
+- name: Homework role
+  hosts: web
+  roles:
+  - name: homeworkrole
+    tags: homework

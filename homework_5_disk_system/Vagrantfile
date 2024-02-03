@@ -1,0 +1,29 @@
+# -*- mode: ruby -*-
+# vim: set ft=ruby :
+USERNAME = "lehakatana"
+GLOBAL_VMNAME = "mdadmvm"
+GLOBAL_BOXNAME = "bento/rockylinux-9"
+GLOBAL_DISK_PATH = "/home/" + USERNAME + "/vmdisks/" + GLOBAL_VMNAME + "/"
+
+
+Vagrant.configure("2") do |config|
+    config.vm.box = GLOBAL_BOXNAME
+    config.vm.hostname = GLOBAL_VMNAME
+    config.vm.network "private_network", ip: "192.168.56.151"
+    config.vm.define  GLOBAL_VMNAME
+    config.vm.provider :virtualbox do |vb|
+        vb.customize ["modifyvm", :id, "--memory", "1024"]
+        vb.customize ["modifyvm", :id, "--cpus", "4"]
+        vb.name = GLOBAL_VMNAME
+
+        (1..6).each do |i|
+            DISK = (GLOBAL_DISK_PATH + "sata#{i}.vdi")
+            unless File.exist?(DISK)
+                vb.customize ['createhd', '--filename', DISK, '--variant', 'Fixed', '--size', "250"]
+            end
+            vb.customize ['storageattach', :id,  '--storagectl', 'SATA Controller', '--port', i, '--device', 0, '--type', 'hdd', '--medium', DISK]
+        end         
+    end
+    config.vm.provision "shell", path:'./mdadm.conf' 
+end
+

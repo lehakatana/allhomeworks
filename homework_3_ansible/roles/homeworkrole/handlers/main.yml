@@ -1,0 +1,15 @@
+---
+# handlers file for homework_role
+
+- name: restart nginx
+  become: yes
+  systemd:
+    name: nginx
+    state: restarted
+    enabled: yes
+
+- name: reload nginx config
+  become: yes
+  systemd:
+    name: nginx
+    state: reloaded

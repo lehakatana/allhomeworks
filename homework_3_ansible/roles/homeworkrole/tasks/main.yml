@@ -1,0 +1,30 @@
+---
+# tasks file for homework_role
+- name: Install Epel Repo
+  become: true
+  yum:
+    name: epel-release
+    state: present
+  tags:
+  - epel-package
+
+- name: Install nginx
+  become: true
+  yum:
+    name: nginx
+    state: latest
+  notify:
+  - restart nginx
+  tags: nginx-install
+
+
+- name: Install nginx and configure
+  become: true
+  template:
+    src: templates/nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+  notify:
+  - reload nginx config
+  tags:
+  - configure-nginx
+  - nginxfull
